@@ -1,0 +1,14 @@
+{
+  "name": "undang-digi",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,client -c green,cyan \"cd server && npm run dev\" \"cd client && npm run dev\""
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.38.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

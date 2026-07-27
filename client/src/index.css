@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --theme-bg: 18 18 18;
+  --theme-surface: 24 24 24;
+  --theme-card: 40 40 40;
+  --theme-primary: 29 185 84;
+  --theme-primary-hover: 30 215 96;
+  --theme-text: 179 179 179;
+  --theme-text-muted: 106 106 106;
+  --theme-glow: 29 185 84;
+  --theme-fg: 255 255 255;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-font-heading: 'Inter', sans-serif;
+}
+
+[data-theme="serenade"] {
+  --theme-bg: 26 31 28;
+  --theme-surface: 35 56 51;
+  --theme-card: 42 58 50;
+  --theme-primary: 184 160 110;
+  --theme-primary-hover: 201 179 128;
+  --theme-text: 196 196 184;
+  --theme-text-muted: 122 138 126;
+  --theme-glow: 184 160 110;
+  --theme-fg: 255 255 255;
+  --theme-font-body: 'Nunito', sans-serif;
+  --theme-font-heading: 'Cinzel', serif;
+}
+
+[data-theme="tema3"] {
+  --theme-bg: 255 251 235;
+  --theme-surface: 255 255 255;
+  --theme-card: 255 255 255;
+  --theme-primary: 199 144 49;
+  --theme-primary-hover: 176 122 32;
+  --theme-text: 55 65 81;
+  --theme-text-muted: 156 163 175;
+  --theme-glow: 199 144 49;
+  --theme-fg: 31 41 55;
+  --theme-font-body: 'Inter', sans-serif;
+  --theme-font-heading: 'Rouge Script', cursive;
+}
+
+[data-theme="tema3"] body {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%);
+}
+
+[data-theme="tema3"] ::-webkit-scrollbar-thumb {
+  background: #C79031;
+  border-radius: 3px;
+}
+
+[data-theme="tema3"] ::-webkit-scrollbar-thumb:hover {
+  background: #b07e25;
+}
+
+body {
+  font-family: var(--theme-font-body);
+  background-color: rgb(var(--theme-bg));
+  color: rgb(var(--theme-text));
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--theme-bg));
+}
+::-webkit-scrollbar-thumb {
+  background: #535353;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--theme-primary));
+}
+
+@layer components {
+  .card-spotify {
+    @apply bg-spotify-card rounded-xl p-6 transition-all duration-300 hover:bg-[#333];
+  }
+  .btn-spotify {
+    @apply bg-spotify-green text-black font-bold px-8 py-3 rounded-full transition-all duration-300 hover:bg-spotify-green-hover hover:scale-105 active:scale-95;
+  }
+  .btn-outline {
+    @apply border border-spotify-green text-spotify-green font-semibold px-6 py-2 rounded-full transition-all duration-300 hover:bg-spotify-green hover:text-black;
+  }
+  .section-title {
+    @apply text-4xl md:text-5xl font-bold text-center mb-2;
+  }
+  .section-subtitle {
+    @apply text-spotify-text text-lg text-center mb-8;
+  }
+}
+
+@layer utilities {
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+  .scroll-reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(var(--theme-glow), 0.3);
+  }
+
+  .text-glow-strong {
+    text-shadow: 0 0 15px rgba(var(--theme-glow), 0.5), 0 0 30px rgba(var(--theme-glow), 0.2);
+  }
+
+  .bg-gradient-spotify {
+    background: linear-gradient(135deg, rgb(var(--theme-bg)) 0%, rgb(var(--theme-surface)) 50%, rgb(var(--theme-bg)) 100%);
+  }
+
+  .bg-gradient-card {
+    background: linear-gradient(145deg, rgb(var(--theme-card)) 0%, rgba(var(--theme-card), 0.8) 100%);
+  }
+
+  .bg-gradient-green {
+    background: linear-gradient(135deg, rgb(var(--theme-primary)) 0%, rgb(var(--theme-primary-hover)) 100%);
+  }
+
+  .border-glow {
+    border-color: rgba(var(--theme-glow), 0.3);
+    box-shadow: 0 0 15px rgba(var(--theme-glow), 0.1), inset 0 0 15px rgba(var(--theme-glow), 0.05);
+  }
+
+  .divider-gradient {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--theme-glow), 0.4), transparent);
+  }
+
+  .ornament-diamond {
+    width: 8px;
+    height: 8px;
+    background: rgb(var(--theme-primary));
+    transform: rotate(45deg);
+    border-radius: 1px;
+  }
+}
+
+@keyframes particle-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.particle {
+  position: fixed;
+  top: -10vh;
+  pointer-events: none;
+  z-index: 0;
+  animation: particle-fall linear infinite;
+}
+
+.star {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  animation: twinkle ease-in-out infinite;
+}
