@@ -52,12 +52,16 @@ export default function EventManager({ token, eventSlug, onEventChange }: EventM
     if (!confirm('Hapus event ini? Semua data tamu & RSVP akan terhapus.')) return;
     try {
       await api.deleteEvent(token, slug);
+      setMessage('Event berhasil dihapus');
       await fetchEvents();
       if (eventSlug === slug) {
         const remaining = events.filter((e) => e.slug !== slug);
         onEventChange(remaining[0]?.slug || '');
       }
-    } catch {}
+      setTimeout(() => setMessage(''), 3000);
+    } catch {
+      setMessage('Gagal menghapus event');
+    }
   };
 
   return (

@@ -111,10 +111,12 @@ async function deleteEvent(slug) {
     await writeToRedis('events:list', list);
     setInMemory('events:list', list);
   }
-  try { await redis.del('event:' + slug); } catch {}
-  try { await redis.del('event:' + slug + ':config'); } catch {}
-  try { await redis.del('event:' + slug + ':guests'); } catch {}
-  try { await redis.del('event:' + slug + ':rsvps'); } catch {}
+  if (isRedis()) {
+    try { await redis.del('event:' + slug); } catch {}
+    try { await redis.del('event:' + slug + ':config'); } catch {}
+    try { await redis.del('event:' + slug + ':guests'); } catch {}
+    try { await redis.del('event:' + slug + ':rsvps'); } catch {}
+  }
   delete memoryStore['event:' + slug];
   delete memoryStore['event:' + slug + ':config'];
   delete memoryStore['event:' + slug + ':guests'];
