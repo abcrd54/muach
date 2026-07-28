@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import Decoration from './Decoration';
 
 const PHOTOS = [
   { src: '/assets/images/gallery/gallery-1.JPG', alt: 'Gallery 1' },
@@ -32,9 +33,7 @@ const fadeUp = {
 export default function Tema3Gallery() {
   return (
     <section id="gallery" className="py-8 md:py-16 px-6 max-w-2xl mx-auto relative">
-      <div className="absolute top-0 right-4 w-10 h-10 text-[#C79031]/8 -rotate-12">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-      </div>
+      <Decoration type="flower-single" size={40} className="absolute top-0 right-4 -rotate-12" opacity={0.1} />
       <motion.div
         initial="hidden"
         whileInView="visible"

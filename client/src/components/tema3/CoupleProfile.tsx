@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { EventData } from '../../utils/api';
+import Decoration from './Decoration';
 
 const MONTHS: Record<string, number> = {
   januari: 0, februari: 1, maret: 2, april: 3, mei: 4, juni: 5,
@@ -86,9 +87,9 @@ export default function CoupleProfile({ event }: { event: EventData }) {
 
   return (
     <section id="couple" className="py-8 md:py-16 px-6 max-w-4xl mx-auto relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-16 text-[#C79031]/6 -z-0">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-      </div>
+      <Decoration type="flower-lotus" size={80} className="absolute top-0 left-1/2 -translate-x-1/2" opacity={0.06} />
+      <Decoration type="ornament-diamond" size={24} className="absolute top-8 left-8" opacity={0.15} animated />
+      <Decoration type="ornament-diamond" size={24} className="absolute top-8 right-8" opacity={0.15} animated />
       {target && (
         <>
           <motion.p
@@ -164,23 +165,17 @@ export default function CoupleProfile({ event }: { event: EventData }) {
         className="flex justify-center mb-6"
       >
         <motion.div custom={3} variants={fadeUp} className="inline-flex items-center gap-2">
-          <div className="w-5 h-5 text-[#C79031]/20">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-          </div>
+          <Decoration type="flower-single" size={24} opacity={0.25} />
           <div className="w-8 h-[1px] bg-[#C79031]/20" />
-          <div className="w-6 h-6 text-[#C79031]/30">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-          </div>
+          <Decoration type="flower-bloom" size={32} opacity={0.35} animated />
           <div className="w-8 h-[1px] bg-[#C79031]/20" />
-          <div className="w-5 h-5 text-[#C79031]/20">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-          </div>
+          <Decoration type="flower-single" size={24} opacity={0.25} />
         </motion.div>
       </motion.div>
 
       <div className="relative">
-        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-[#C79031]/20 z-10">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+          <Decoration type="heart-ornament" size={48} opacity={0.2} animated />
         </div>
         <motion.div
           initial="hidden"
@@ -195,12 +190,8 @@ export default function CoupleProfile({ event }: { event: EventData }) {
             className="relative"
           >
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 text-center shadow-md border border-[#C79031]/10 relative overflow-hidden">
-                <div className="absolute -top-3 -left-3 w-10 h-10 text-[#C79031]/10 rotate-45">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-                </div>
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 text-[#C79031]/10 -rotate-12">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-                </div>
+                <Decoration type="flower-single" size={40} className="absolute -top-3 -left-3 rotate-45" opacity={0.12} />
+                <Decoration type="flower-single" size={32} className="absolute -bottom-2 -right-2 -rotate-12" opacity={0.12} />
                 <div className="relative z-10">
               <div className="relative w-44 h-44 mx-auto mb-6">
                 <img

@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { EventData } from '../../utils/api';
+import Decoration from './Decoration';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -48,12 +49,8 @@ export default function EventDetail({ event }: { event: EventData }) {
         viewport={{ once: true, margin: '-100px' }}
         className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-md border border-[#C79031]/10 relative"
       >
-        <div className="absolute -top-2 -right-2 w-10 h-10 text-[#C79031]/10 rotate-12">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-        </div>
-        <div className="absolute -bottom-3 -left-3 w-12 h-12 text-[#C79031]/10 -rotate-45">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-        </div>
+        <Decoration type="flower-single" size={40} className="absolute -top-2 -right-2 rotate-12 z-10" opacity={0.12} />
+        <Decoration type="flower-single" size={48} className="absolute -bottom-3 -left-3 -rotate-45 z-10" opacity={0.12} />
         <div className="aspect-video">
           <iframe
             src={event.mapsEmbedUrl}

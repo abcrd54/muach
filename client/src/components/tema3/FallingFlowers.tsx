@@ -37,7 +37,7 @@ export default function FallingFlowers() {
         z-index: 0;
       `;
 
-      petal.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" style="color: #C79031; width:100%; height:100%;"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>`;
+      petal.innerHTML = `<img src="/assets/images/tema3/flower-single.svg" alt="" style="width:100%; height:100%; opacity:0.8;" />`;
       container.appendChild(petal);
       petals.push(petal);
     }

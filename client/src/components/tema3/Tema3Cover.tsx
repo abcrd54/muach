@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { Guest } from '../../utils/api';
+import Decoration from './Decoration';
 
 interface Tema3CoverProps {
   guest: Guest;
@@ -30,6 +31,11 @@ export default function Tema3Cover({ guest, onOpen }: Tema3CoverProps) {
         />
         <div className="absolute inset-0 bg-black/50" />
       </div>
+
+      <Decoration type="ornament-corner" size={64} className="absolute top-6 left-6 z-10" opacity={0.5} animated />
+      <Decoration type="ornament-corner" size={64} className="absolute top-6 right-6 z-10 scale-x-[-1]" opacity={0.5} animated />
+      <Decoration type="ornament-corner" size={64} className="absolute bottom-6 left-6 z-10 scale-y-[-1]" opacity={0.5} animated />
+      <Decoration type="ornament-corner" size={64} className="absolute bottom-6 right-6 z-10 scale-x-[-1] scale-y-[-1]" opacity={0.5} animated />
 
       <motion.div
         variants={container}

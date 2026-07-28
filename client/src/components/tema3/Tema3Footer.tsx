@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { EventData } from '../../utils/api';
+import Decoration from './Decoration';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -13,12 +14,8 @@ const fadeUp = {
 export default function Tema3Footer({ event }: { event: EventData }) {
   return (
     <section id="footer" className="relative pt-8 pb-20 md:pt-16 md:pb-32 px-6 text-center">
-      <div className="absolute top-0 left-4 w-8 h-8 text-[#C79031]/10 rotate-45">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-      </div>
-      <div className="absolute top-0 right-4 w-6 h-6 text-[#C79031]/10 -rotate-12">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C12 2 10 8 6 10C10 10 12 16 12 16C12 16 14 10 18 10C14 8 12 2 12 2Z"/></svg>
-      </div>
+      <Decoration type="flower-single" size={32} className="absolute top-0 left-4 rotate-45" opacity={0.12} />
+      <Decoration type="flower-single" size={28} className="absolute top-0 right-4 -rotate-12" opacity={0.12} />
       <img
         src="/assets/images/tema3/footer_t.svg"
         alt=""
