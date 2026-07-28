@@ -3,12 +3,13 @@ import { api, Guest } from '../../utils/api';
 
 interface GuestFormProps {
   token: string;
+  eventSlug: string;
   editingGuest: Guest | null;
   onSaved: () => void;
   onCancel: () => void;
 }
 
-export default function GuestForm({ token, editingGuest, onSaved, onCancel }: GuestFormProps) {
+export default function GuestForm({ token, eventSlug, editingGuest, onSaved, onCancel }: GuestFormProps) {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,9 +35,9 @@ export default function GuestForm({ token, editingGuest, onSaved, onCancel }: Gu
     setLoading(true);
     try {
       if (editingGuest) {
-        await api.updateGuest(token, editingGuest.id, name, address);
+        await api.updateGuest(token, eventSlug, editingGuest.id, name, address);
       } else {
-        await api.addGuest(token, name, address);
+        await api.addGuest(token, eventSlug, name, address);
       }
       onSaved();
     } catch (err: any) {

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AdminLogin from '../components/admin/AdminLogin';
+import EventManager from '../components/admin/EventManager';
 import GuestList from '../components/admin/GuestList';
 import ThemeSelector from '../components/admin/ThemeSelector';
 import EventForm from '../components/admin/EventForm';
@@ -8,6 +9,7 @@ export default function AdminPage() {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem('admin_token')
   );
+  const [eventSlug, setEventSlug] = useState('');
 
   const handleLogin = (newToken: string) => {
     setToken(newToken);
@@ -16,6 +18,7 @@ export default function AdminPage() {
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
     setToken(null);
+    setEventSlug('');
   };
 
   if (!token) {
@@ -34,9 +37,10 @@ export default function AdminPage() {
             Logout
           </button>
         </div>
-        <ThemeSelector token={token} />
-        <EventForm token={token} />
-        <GuestList token={token} onLogout={handleLogout} />
+        <EventManager token={token} eventSlug={eventSlug} onEventChange={setEventSlug} />
+        <ThemeSelector token={token} eventSlug={eventSlug} />
+        <EventForm token={token} eventSlug={eventSlug} />
+        <GuestList token={token} eventSlug={eventSlug} />
       </div>
     </div>
   );

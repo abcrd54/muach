@@ -12,11 +12,12 @@ interface Tema3LayoutProps {
   event: EventData;
   guestId: string;
   guestName: string;
+  eventSlug: string;
   isPlaying: boolean;
   onTogglePlay: () => void;
 }
 
-export default function Tema3Layout({ event, guestId, guestName, isPlaying, onTogglePlay }: Tema3LayoutProps) {
+export default function Tema3Layout({ event, guestId, guestName, eventSlug, isPlaying, onTogglePlay }: Tema3LayoutProps) {
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%)' }}>
       <button
@@ -34,7 +35,7 @@ export default function Tema3Layout({ event, guestId, guestName, isPlaying, onTo
       <CoupleProfile event={event} />
       <EventDetail event={event} />
       <Tema3Gallery />
-      <GuestbookPublik guestId={guestId} guestName={guestName} />
+      <GuestbookPublik guestId={guestId} guestName={guestName} eventSlug={eventSlug} />
       <Tema3Footer event={event} />
       <BottomNav />
     </div>

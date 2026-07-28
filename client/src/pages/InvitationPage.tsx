@@ -15,7 +15,7 @@ import MusicPlayer from '../components/invitation/MusicPlayer';
 import Particles from '../components/invitation/Particles';
 
 export default function InvitationPage() {
-  const { guestSlug } = useParams<{ guestSlug: string }>();
+  const { eventSlug, guestSlug } = useParams<{ eventSlug: string; guestSlug: string }>();
   const [guest, setGuest] = useState<Guest | null>(null);
   const [event, setEvent] = useState<EventData>(DEFAULT_EVENT);
   const [theme, setTheme] = useState<string>('spotify');
@@ -25,21 +25,23 @@ export default function InvitationPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    api.getConfig().then((config) => {
-      document.documentElement.setAttribute('data-theme', config.theme);
-      setTheme(config.theme);
-    }).catch(() => {});
-    api.getEvent().then(setEvent).catch(() => {});
-  }, []);
+    if (eventSlug) {
+      api.getConfig(eventSlug).then((config) => {
+        document.documentElement.setAttribute('data-theme', config.theme);
+        setTheme(config.theme);
+      }).catch(() => {});
+      api.getEvent(eventSlug).then(setEvent).catch(() => {});
+    }
+  }, [eventSlug]);
 
   useEffect(() => {
-    if (guestSlug) {
-      api.getGuestBySlug(guestSlug)
+    if (eventSlug && guestSlug) {
+      api.getGuestBySlug(eventSlug, guestSlug)
         .then(setGuest)
         .catch(() => setGuest(null))
         .finally(() => setLoading(false));
     }
-  }, [guestSlug]);
+  }, [eventSlug, guestSlug]);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -116,7 +118,7 @@ export default function InvitationPage() {
               transition={{ duration: 0.5 }}
               className="relative z-10"
             >
-              <Tema3Layout event={event} guestId={guest.id} guestName={guest.name} isPlaying={isPlaying} onTogglePlay={togglePlay} />
+              <Tema3Layout event={event} guestId={guest.id} guestName={guest.name} eventSlug={eventSlug || ''} isPlaying={isPlaying} onTogglePlay={togglePlay} />
             </motion.div>
           ) : (
             <motion.div
@@ -145,7 +147,7 @@ export default function InvitationPage() {
               <div className="relative h-16 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-b from-spotify-surface/30 to-spotify-bg" />
               </div>
-              <RSVPForm guestId={guest.id} guestName={guest.name} />
+              <RSVPForm guestId={guest.id} guestName={guest.name} eventSlug={eventSlug || ''} />
               <Closing event={event} />
             </motion.div>
           )

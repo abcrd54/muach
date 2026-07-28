@@ -1,194 +1,117 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { api, Guest } from '../../utils/api';
 import GuestForm from './GuestForm';
 
 interface GuestListProps {
   token: string;
-  onLogout: () => void;
+  eventSlug: string;
 }
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
-export default function GuestList({ token, onLogout }: GuestListProps) {
+export default function GuestList({ token, eventSlug }: GuestListProps) {
   const [guests, setGuests] = useState<Guest[]>([]);
-  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [copiedMsg, setCopiedMsg] = useState<string | null>(null);
-  const [coupleSlug, setCoupleSlug] = useState('alex-dan-jessica');
+  const [editing, setEditing] = useState<Guest | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const msgTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  useEffect(() => {
-    api.getEvent().then((event) => {
-      setCoupleSlug(slugify(`${event.coupleName1} dan ${event.coupleName2}`));
-    }).catch(() => {});
-  }, []);
-
-  const fetchGuests = useCallback(async () => {
+  const fetchGuests = async () => {
+    if (!eventSlug) { setLoading(false); return; }
+    setLoading(true);
     try {
-      const data = await api.getGuests(token);
+      const data = await api.getGuests(token, eventSlug);
       setGuests(data);
-    } catch (err: any) {
-      if (err?.status === 401) {
-        onLogout();
-      } else {
-        setError('Gagal memuat data tamu');
-      }
-    } finally {
+    } catch {} finally {
       setLoading(false);
     }
-  }, [token, onLogout]);
+  };
 
-  useEffect(() => {
-    fetchGuests();
-  }, [fetchGuests]);
-
-  useEffect(() => {
-    return () => {
-      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-      if (msgTimerRef.current) clearTimeout(msgTimerRef.current);
-    };
-  }, []);
+  useEffect(() => { fetchGuests(); }, [eventSlug, token]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Yakin ingin menghapus tamu ini?')) return;
+    if (!confirm('Hapus tamu ini?')) return;
     try {
-      await api.deleteGuest(token, id);
-      setGuests((prev) => prev.filter((g) => g.id !== id));
-      setError('');
-    } catch {
-      setError('Gagal menghapus tamu');
-    }
-  };
-
-  const handleCopyLink = (guest: Guest) => {
-    const baseUrl = window.location.origin;
-    const link = `${baseUrl}/${coupleSlug}/${guest.slug}`;
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(link).then(() => {
-        setCopiedId(guest.id);
-        if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
-        copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
-      }).catch(() => {});
-    }
-  };
-
-  const handleCopyMessage = (guest: Guest) => {
-    const baseUrl = window.location.origin;
-    const link = `${baseUrl}/${coupleSlug}/${guest.slug}`;
-    const message = `Assalamu'alaikum Bapak/Ibu/Saudara/i ${guest.name}
-
-Tanpa mengurangi rasa hormat, kami mengundang ${guest.name} di ${guest.address} untuk menghadiri acara pernikahan kami.
-
-Berikut link undangan digital:
-${link}
-
-Merupakan suatu kehormatan apabila Bapak/Ibu/Saudara/i berkenan hadir.
-
-Terima kasih.`;
-
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(message).then(() => {
-        setCopiedMsg(guest.id);
-        if (msgTimerRef.current) clearTimeout(msgTimerRef.current);
-        msgTimerRef.current = setTimeout(() => setCopiedMsg(null), 2000);
-      }).catch(() => {});
-    }
+      await api.deleteGuest(token, eventSlug, id);
+      fetchGuests();
+    } catch {}
   };
 
   const handleSaved = () => {
-    setEditingGuest(null);
+    setEditing(null);
+    setShowForm(false);
     fetchGuests();
   };
 
-  return (
-    <>
-      <GuestForm
-        token={token}
-        editingGuest={editingGuest}
-        onSaved={handleSaved}
-        onCancel={() => setEditingGuest(null)}
-      />
+  const copyLink = (guest: Guest) => {
+    const link = `${window.location.origin}/${eventSlug}/${guest.slug}`;
+    navigator.clipboard.writeText(link);
+  };
 
-      <div className="card-spotify">
-        <h3 className="text-lg font-semibold mb-4">
-          Daftar Tamu ({guests.length})
-        </h3>
-        {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-        {loading ? (
-          <p className="text-spotify-text">Loading...</p>
-        ) : guests.length === 0 ? (
-          <p className="text-spotify-text">Belum ada tamu. Tambahkan tamu di atas.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="text-left text-spotify-text text-sm border-b border-[#404040]">
-                  <th className="pb-3 font-medium">Nama</th>
-                  <th className="pb-3 font-medium">Alamat</th>
-                  <th className="pb-3 font-medium">Link / Pesan</th>
-                  <th className="pb-3 font-medium">Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {guests.map((guest) => (
-                  <motion.tr
-                    key={guest.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="border-b border-[#222] hover:bg-[#333] transition-colors"
-                  >
-                    <td className="py-3 font-medium">{guest.name}</td>
-                    <td className="py-3 text-spotify-text">{guest.address}</td>
-                    <td className="py-3">
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => handleCopyLink(guest)}
-                          className="text-spotify-green hover:text-spotify-green-hover text-sm transition-colors"
-                        >
-                          {copiedId === guest.id ? 'Copied!' : 'Copy Link'}
-                        </button>
-                        <button
-                          onClick={() => handleCopyMessage(guest)}
-                          className="text-spotify-green hover:text-spotify-green-hover text-sm transition-colors"
-                        >
-                          {copiedMsg === guest.id ? 'Copied!' : 'Copy Pesan'}
-                        </button>
-                      </div>
-                    </td>
-                    <td className="py-3">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setEditingGuest(guest)}
-                          className="text-spotify-text hover:text-spotify-white transition-colors text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(guest.id)}
-                          className="text-red-500 hover:text-red-400 transition-colors text-sm"
-                        >
-                          Hapus
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+  if (loading) {
+    return <div className="card-spotify mb-6"><p className="text-spotify-text">Loading daftar tamu...</p></div>;
+  }
+
+  if (!eventSlug) {
+    return <div className="card-spotify mb-6"><p className="text-spotify-text">Pilih event terlebih dahulu</p></div>;
+  }
+
+  return (
+    <div className="card-spotify mb-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold">Daftar Tamu ({guests.length})</h3>
+        <button onClick={() => { setEditing(null); setShowForm(!showForm); }} className="btn-spotify text-sm">
+          {showForm ? 'Tutup' : '+ Tambah Tamu'}
+        </button>
       </div>
-    </>
+
+      {showForm && (
+        <GuestForm token={token} eventSlug={eventSlug} editingGuest={editing} onSaved={handleSaved} onCancel={() => { setShowForm(false); setEditing(null); }} />
+      )}
+
+      {guests.length === 0 && !showForm ? (
+        <p className="text-spotify-text text-sm">Belum ada tamu.</p>
+      ) : (
+        <div className="space-y-2">
+          {guests.map((guest) => (
+            <motion.div
+              key={guest.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-between p-3 bg-spotify-bg rounded-lg"
+            >
+              <div>
+                <p className="font-medium text-sm">{guest.name}</p>
+                <p className="text-spotify-text text-xs">{guest.address}</p>
+                <p className="text-spotify-text text-[10px] mt-0.5">
+                  <a href={`/${eventSlug}/${guest.slug}`} target="_blank" rel="noreferrer" className="text-spotify-green hover:underline">
+                    /{eventSlug}/{guest.slug}
+                  </a>
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => copyLink(guest)}
+                  className="text-spotify-text hover:text-spotify-green text-xs"
+                  title="Copy link"
+                >
+                  Copy
+                </button>
+                <button
+                  onClick={() => { setEditing(guest); setShowForm(true); }}
+                  className="text-spotify-text hover:text-spotify-white text-xs"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(guest.id)}
+                  className="text-red-500 hover:text-red-400 text-xs"
+                >
+                  Hapus
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

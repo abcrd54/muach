@@ -8,7 +8,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/admin" replace />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/:coupleSlug/:guestSlug" element={<InvitationPage />} />
+        <Route path="/:eventSlug/:guestSlug" element={<InvitationPage />} />
         <Route path="*" element={
           <div className="min-h-screen flex items-center justify-center bg-spotify-bg">
             <div className="text-center">

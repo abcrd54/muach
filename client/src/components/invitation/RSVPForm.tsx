@@ -5,6 +5,7 @@ import { api } from '../../utils/api';
 interface RSVPFormProps {
   guestId: string;
   guestName: string;
+  eventSlug: string;
 }
 
 const fadeUp = {
@@ -16,7 +17,7 @@ const fadeUp = {
   }),
 };
 
-export default function RSVPForm({ guestId, guestName }: RSVPFormProps) {
+export default function RSVPForm({ guestId, guestName, eventSlug }: RSVPFormProps) {
   const [name, setName] = useState(guestName);
   const [attendance, setAttendance] = useState<'yes' | 'no' | 'maybe' | ''>('');
   const [message, setMessage] = useState('');
@@ -37,7 +38,7 @@ export default function RSVPForm({ guestId, guestName }: RSVPFormProps) {
     setError('');
     setLoading(true);
     try {
-      await api.submitRSVP({
+      await api.submitRSVP(eventSlug, {
         guestId,
         name,
         attendance: attendance as 'yes' | 'no' | 'maybe',

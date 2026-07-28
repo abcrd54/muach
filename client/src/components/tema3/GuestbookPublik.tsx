@@ -17,7 +17,7 @@ const badgeMap: Record<string, { label: string; color: string }> = {
   maybe: { label: 'Ragu', color: 'bg-yellow-100 text-yellow-700' },
 };
 
-export default function GuestbookPublik({ guestId, guestName }: { guestId: string; guestName: string }) {
+export default function GuestbookPublik({ guestId, guestName, eventSlug }: { guestId: string; guestName: string; eventSlug: string }) {
   const [rsvps, setRsvps] = useState<RSVPItem[]>([]);
   const [name, setName] = useState(guestName);
   const [attendance, setAttendance] = useState<'yes' | 'no' | 'maybe' | ''>('');
@@ -31,7 +31,7 @@ export default function GuestbookPublik({ guestId, guestName }: { guestId: strin
   }, [guestName]);
 
   useEffect(() => {
-    api.getRSVPs().then(setRsvps).catch(() => {});
+    api.getRSVPs(eventSlug).then(setRsvps).catch(() => {});
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,14 +43,14 @@ export default function GuestbookPublik({ guestId, guestName }: { guestId: strin
     setError('');
     setLoading(true);
     try {
-      await api.submitRSVP({
+      await api.submitRSVP(eventSlug, {
         guestId,
         name,
         attendance: attendance as 'yes' | 'no' | 'maybe',
         message,
       });
       setSubmitted(true);
-      const updated = await api.getRSVPs();
+      const updated = await api.getRSVPs(eventSlug);
       setRsvps(updated);
     } catch {
       setError('Gagal mengirim konfirmasi');
