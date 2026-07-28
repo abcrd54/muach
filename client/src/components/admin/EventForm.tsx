@@ -125,14 +125,10 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
       const parts = (merged.akadTime || '').split(' - ');
       if (parts.length === 2) {
         setAkadTimeEnd(parts[1].replace(' WIB', '').trim());
-      } else {
-        setAkadTimeEnd(parts[0]?.replace(' WIB', '').trim() || '');
       }
       const rparts = (merged.resepsiTime || '').split(' - ');
       if (rparts.length === 2) {
         setResepsiTimeEnd(rparts[1].replace(' WIB', '').trim());
-      } else {
-        setResepsiTimeEnd(rparts[0]?.replace(' WIB', '').trim() || '');
       }
     }).catch(() => {}).finally(() => setLoading(false));
   }, [eventSlug]);
@@ -228,7 +224,7 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
           <div className="grid grid-cols-3 gap-3">
             <DateField label="Tanggal" value={data.akadDate} onChange={(v) => set('akadDate', v)} />
             <TimeField label="Jam Mulai" value={data.akadTime} onChange={(v) => set('akadTime', v)} />
-            <TimeField label="Jam Selesai" value={akadTimeEnd} onChange={setAkadTimeEnd} />
+            <TimeField label="Jam Selesai (opsional)" value={akadTimeEnd} onChange={setAkadTimeEnd} />
           </div>
         </div>
 
@@ -238,7 +234,7 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
           <div className="grid grid-cols-3 gap-3">
             <DateField label="Tanggal" value={data.resepsiDate} onChange={(v) => set('resepsiDate', v)} />
             <TimeField label="Jam Mulai" value={data.resepsiTime} onChange={(v) => set('resepsiTime', v)} />
-            <TimeField label="Jam Selesai" value={resepsiTimeEnd} onChange={setResepsiTimeEnd} />
+            <TimeField label="Jam Selesai (opsional)" value={resepsiTimeEnd} onChange={setResepsiTimeEnd} />
           </div>
         </div>
 
