@@ -97,7 +97,7 @@ export default function InvitationPage() {
   const isTema3 = theme === 'tema3';
 
   return (
-    <div className="min-h-screen bg-spotify-bg relative">
+    <div className="min-h-screen bg-spotify-bg relative overflow-x-hidden">
       <audio
         ref={audioRef}
         src="/assets/music/lagu.mp3"

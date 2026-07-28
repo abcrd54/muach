@@ -189,9 +189,9 @@ export default function CoupleProfile({ event }: { event: EventData }) {
             variants={profileAnimations[i]}
             className="relative"
           >
+            <Decoration type="flower-single" size={40} className="absolute -top-3 -left-3 rotate-45 z-10" opacity={0.12} />
+            <Decoration type="flower-single" size={32} className="absolute -bottom-2 -right-2 -rotate-12 z-10" opacity={0.12} />
             <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 text-center shadow-md border border-[#C79031]/10 relative overflow-hidden">
-                <Decoration type="flower-single" size={40} className="absolute -top-3 -left-3 rotate-45" opacity={0.12} />
-                <Decoration type="flower-single" size={32} className="absolute -bottom-2 -right-2 -rotate-12" opacity={0.12} />
                 <div className="relative z-10">
               <div className="relative w-44 h-44 mx-auto mb-6">
                 <img

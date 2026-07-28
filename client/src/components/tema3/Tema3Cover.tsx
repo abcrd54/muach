@@ -23,7 +23,7 @@ const item = {
 export default function Tema3Cover({ guest, onOpen }: Tema3CoverProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <img
           src="/assets/images/cover.JPG"
           alt=""

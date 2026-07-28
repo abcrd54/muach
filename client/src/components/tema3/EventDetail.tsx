@@ -43,14 +43,15 @@ export default function EventDetail({ event }: { event: EventData }) {
         </motion.p>
       </motion.div>
 
-      <motion.div
+      <div className="relative">
+        <Decoration type="flower-single" size={40} className="absolute -top-2 -right-2 rotate-12 z-10" opacity={0.12} />
+        <Decoration type="flower-single" size={48} className="absolute -bottom-3 -left-3 -rotate-45 z-10" opacity={0.12} />
+        <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-100px' }}
-        className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-md border border-[#C79031]/10 relative"
+        className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-md border border-[#C79031]/10"
       >
-        <Decoration type="flower-single" size={40} className="absolute -top-2 -right-2 rotate-12 z-10" opacity={0.12} />
-        <Decoration type="flower-single" size={48} className="absolute -bottom-3 -left-3 -rotate-45 z-10" opacity={0.12} />
         <div className="aspect-video">
           <iframe
             src={event.mapsEmbedUrl}
@@ -109,6 +110,7 @@ export default function EventDetail({ event }: { event: EventData }) {
           </motion.div>
         </div>
       </motion.div>
+      </div>
 
       <div className="mt-6 md:mt-10 flex justify-center">
         <div className="w-32 h-px bg-gradient-to-r from-transparent via-[#C79031]/40 to-transparent" />

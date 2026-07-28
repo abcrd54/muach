@@ -19,7 +19,7 @@ interface Tema3LayoutProps {
 
 export default function Tema3Layout({ event, guestId, guestName, eventSlug, isPlaying, onTogglePlay }: Tema3LayoutProps) {
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%)' }}>
+    <div className="min-h-screen overflow-hidden" style={{ background: 'linear-gradient(180deg, #fffbeb 0%, #fef3c7 50%, #fffbeb 100%)' }}>
       <button
         onClick={onTogglePlay}
         className="fixed top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/80 backdrop-blur-sm shadow-md border border-[#C79031]/20 flex items-center justify-center hover:bg-white transition-colors"
