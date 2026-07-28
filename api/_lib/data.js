@@ -218,4 +218,5 @@ module.exports = {
   readRSVPs, writeRSVPs,
   slugify, ADMIN_PASSWORD, AUTH_TOKEN,
   parseBody, json, authMiddleware,
+  writeToRedis, setInMemory, memoryStore,
 };
