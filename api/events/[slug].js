@@ -1,4 +1,4 @@
-const { readEvent, writeEvent, deleteEvent, parseBody, json, authMiddleware } = require('../../_lib/data');
+const { listEvents, readEvent, writeEvent, deleteEvent, parseBody, json, authMiddleware } = require('../../_lib/data');
 
 module.exports = async function handler(req, res) {
   const { slug } = req.query;
@@ -29,8 +29,13 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'DELETE') {
     if (!authMiddleware(req)) return json(res, { message: 'Unauthorized' }, 401);
-    await deleteEvent(slug);
-    return json(res, { message: 'Event berhasil dihapus' });
+    try {
+      await deleteEvent(slug);
+      return json(res, { message: 'Event berhasil dihapus' });
+    } catch (e) {
+      console.error('deleteEvent error:', e.message || e);
+      return json(res, { message: 'Gagal menghapus event' }, 500);
+    }
   }
 
   return json(res, { message: 'Method not allowed' }, 405);
