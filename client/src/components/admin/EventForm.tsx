@@ -72,8 +72,44 @@ function Field({ label, value, onChange, placeholder }: { label: string; value: 
   );
 }
 
+function DateField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="block text-spotify-text text-xs mb-1">{label}</label>
+      <input type="date" value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors [color-scheme:dark]" />
+    </div>
+  );
+}
+
+function TimeField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="block text-spotify-text text-xs mb-1">{label}</label>
+      <input type="time" value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors [color-scheme:dark]" />
+    </div>
+  );
+}
+
+const MONTHS_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+const DAYS_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+function formatDate(iso: string): string {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) return iso;
+  return `${DAYS_ID[d.getDay()]}, ${d.getDate()} ${MONTHS_ID[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function formatTimeRange(start: string, end: string): string {
+  if (!start) return '';
+  if (!end) return `${start} WIB`;
+  return `${start} - ${end} WIB`;
+}
+
 export default function EventForm({ token, eventSlug }: EventFormProps) {
   const [data, setData] = useState<EventData>(EMPTY);
+  const [akadTimeEnd, setAkadTimeEnd] = useState('');
+  const [resepsiTimeEnd, setResepsiTimeEnd] = useState('');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -86,6 +122,18 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
       if (!merged.brideRole) merged.brideRole = 'Putra dari';
       if (!merged.groomRole) merged.groomRole = 'Putri dari';
       setData(merged);
+      const parts = (merged.akadTime || '').split(' - ');
+      if (parts.length === 2) {
+        setAkadTimeEnd(parts[1].replace(' WIB', '').trim());
+      } else {
+        setAkadTimeEnd(parts[0]?.replace(' WIB', '').trim() || '');
+      }
+      const rparts = (merged.resepsiTime || '').split(' - ');
+      if (rparts.length === 2) {
+        setResepsiTimeEnd(rparts[1].replace(' WIB', '').trim());
+      } else {
+        setResepsiTimeEnd(rparts[0]?.replace(' WIB', '').trim() || '');
+      }
     }).catch(() => {}).finally(() => setLoading(false));
   }, [eventSlug]);
 
@@ -93,6 +141,10 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
     setData((prev) => {
       const next = { ...prev, [field]: value };
       if (field === 'mapsLink') next.mapsEmbedUrl = genEmbedUrl(value);
+      if (field === 'akadDate') {
+        const formatted = formatDate(value);
+        if (!next.weddingDate) next.weddingDate = formatted;
+      }
       return next;
     });
   }, []);
@@ -102,7 +154,15 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
     setSaving(true);
     setMessage('');
     try {
-      const updated = await api.updateEvent(token, eventSlug, data);
+      const payload = {
+        ...data,
+        weddingDate: data.weddingDate || formatDate(data.akadDate),
+        akadDate: formatDate(data.akadDate),
+        akadTime: formatTimeRange(data.akadTime, akadTimeEnd),
+        resepsiDate: formatDate(data.resepsiDate),
+        resepsiTime: formatTimeRange(data.resepsiTime, resepsiTimeEnd),
+      };
+      const updated = await api.updateEvent(token, eventSlug, payload);
       setData(updated);
       setMessage('Data berhasil disimpan');
       setTimeout(() => setMessage(''), 3000);
@@ -162,27 +222,23 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
           </div>
         </div>
 
-        {/* Tanggal */}
-        <div>
-          <h4 className="text-spotify-green text-sm font-medium mb-3">Tanggal Pernikahan</h4>
-          <Field label="Tanggal" value={data.weddingDate} onChange={(v) => set('weddingDate', v)} placeholder="12 Desember 2026" />
-        </div>
-
-        {/* Akad Nikah */}
+        {/* Tanggal Akad */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Akad Nikah</h4>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Tanggal" value={data.akadDate} onChange={(v) => set('akadDate', v)} placeholder="Sabtu, 12 Desember 2026" />
-            <Field label="Waktu" value={data.akadTime} onChange={(v) => set('akadTime', v)} placeholder="08:00 - 10:00 WIB" />
+          <div className="grid grid-cols-3 gap-3">
+            <DateField label="Tanggal" value={data.akadDate} onChange={(v) => set('akadDate', v)} />
+            <TimeField label="Jam Mulai" value={data.akadTime} onChange={(v) => set('akadTime', v)} />
+            <TimeField label="Jam Selesai" value={akadTimeEnd} onChange={setAkadTimeEnd} />
           </div>
         </div>
 
         {/* Resepsi */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Resepsi</h4>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Tanggal" value={data.resepsiDate} onChange={(v) => set('resepsiDate', v)} placeholder="Sabtu, 12 Desember 2026" />
-            <Field label="Waktu" value={data.resepsiTime} onChange={(v) => set('resepsiTime', v)} placeholder="11:00 - 17:00 WIB" />
+          <div className="grid grid-cols-3 gap-3">
+            <DateField label="Tanggal" value={data.resepsiDate} onChange={(v) => set('resepsiDate', v)} />
+            <TimeField label="Jam Mulai" value={data.resepsiTime} onChange={(v) => set('resepsiTime', v)} />
+            <TimeField label="Jam Selesai" value={resepsiTimeEnd} onChange={setResepsiTimeEnd} />
           </div>
         </div>
 
