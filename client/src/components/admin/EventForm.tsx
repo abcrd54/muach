@@ -14,11 +14,13 @@ const EMPTY: EventData = {
   akadDate: '', akadTime: '', resepsiDate: '', resepsiTime: '',
 };
 
-function genEmbedUrl(link: string): string {
+function genEmbedUrl(link: string, venueName?: string, venueAddress?: string): string {
   if (!link) return '';
   const m = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
   if (m) return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966!2d${m[2]}!3d${m[1]}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!5e0!3m2!1sid!2sid!4v1`;
-  return link;
+  const query = [venueName, venueAddress].filter(Boolean).join(' ');
+  if (query) return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d0!2d0!3d0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!5e0!3m2!1sid!2sid!4v1&q=${encodeURIComponent(query)}`;
+  return '';
 }
 
 function readFileAsDataURL(file: File): Promise<string> {
@@ -313,7 +315,6 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
   const set = useCallback((field: keyof EventData, value: string) => {
     setData((prev) => {
       const next = { ...prev, [field]: value };
-      if (field === 'mapsLink') next.mapsEmbedUrl = genEmbedUrl(value);
       if (field === 'akadDate') {
         const formatted = formatDate(value);
         if (!next.weddingDate) next.weddingDate = formatted;
@@ -329,6 +330,7 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
     try {
       const payload = {
         ...data,
+        mapsEmbedUrl: genEmbedUrl(data.mapsLink, data.venueName, data.venueAddress),
         weddingDate: data.weddingDate || formatDate(data.akadDate),
         akadDate: formatDate(data.akadDate),
         akadTime: formatTimeRange(data.akadTime, akadTimeEnd),
