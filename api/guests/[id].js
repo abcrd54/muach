@@ -1,4 +1,4 @@
-const { readGuests, writeGuests, slugify, parseBody, json, authMiddleware } = require('../../_lib/data');
+const { readGuests, writeGuests, slugify, parseBody, json, authMiddleware } = require('../_lib/data');
 
 module.exports = async function handler(req, res) {
   const { id } = req.query;

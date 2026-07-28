@@ -1,4 +1,4 @@
-const { listEvents, readEvent, writeEvent, parseBody, json, authMiddleware } = require('../../_lib/data');
+const { listEvents, readEvent, writeEvent, parseBody, json, authMiddleware } = require('../_lib/data');
 
 module.exports = async function handler(req, res) {
   const { slug } = req.query;
