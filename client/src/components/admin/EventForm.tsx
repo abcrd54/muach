@@ -16,8 +16,12 @@ const EMPTY: EventData = {
 
 function genEmbedUrl(link: string, venueName?: string, venueAddress?: string): string {
   if (!link) return '';
-  const m = link.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  let url = link;
+  const srcMatch = link.match(/src="(https:\/\/www\.google\.com\/maps\/embed\?[^"]+)"/);
+  if (srcMatch) url = srcMatch[1];
+  const m = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
   if (m) return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966!2d${m[2]}!3d${m[1]}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!5e0!3m2!1sid!2sid!4v1`;
+  if (url.includes('google.com/maps/embed')) return url;
   const query = [venueName, venueAddress].filter(Boolean).join(' ');
   if (query) return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d0!2d0!3d0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0:0x0!5e0!3m2!1sid!2sid!4v1&q=${encodeURIComponent(query)}`;
   return '';
@@ -328,8 +332,12 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
     setSaving(true);
     setMessage('');
     try {
+      let mapsLink = data.mapsLink;
+      const srcMatch = mapsLink.match(/src="(https:\/\/www\.google\.com\/maps\/embed\?[^"]+)"/);
+      if (srcMatch) mapsLink = srcMatch[1];
       const payload = {
         ...data,
+        mapsLink,
         mapsEmbedUrl: genEmbedUrl(data.mapsLink, data.venueName, data.venueAddress),
         weddingDate: data.weddingDate || formatDate(data.akadDate),
         akadDate: formatDate(data.akadDate),
