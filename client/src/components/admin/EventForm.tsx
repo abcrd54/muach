@@ -72,26 +72,9 @@ function Field({ label, value, onChange, placeholder }: { label: string; value: 
   );
 }
 
-function DateField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <div>
-      <label className="block text-spotify-text text-xs mb-1">{label}</label>
-      <input type="date" value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors [color-scheme:dark]" />
-    </div>
-  );
-}
-
-function TimeField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <div>
-      <label className="block text-spotify-text text-xs mb-1">{label}</label>
-      <input type="time" value={value || ''} onChange={(e) => onChange(e.target.value)} className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors [color-scheme:dark]" />
-    </div>
-  );
-}
-
 const MONTHS_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 const DAYS_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const DAYS_SHORT = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 function formatDate(iso: string): string {
   if (!iso) return '';
@@ -103,7 +86,201 @@ function formatDate(iso: string): string {
 function formatTimeRange(start: string, end: string): string {
   if (!start) return '';
   if (!end) return `${start} WIB`;
+  if (end === 'Selesai') return `${start} - Selesai`;
   return `${start} - ${end} WIB`;
+}
+
+function DatePicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
+
+  const getInitialDate = () => {
+    if (value) {
+      const d = new Date(value + 'T00:00:00');
+      if (!isNaN(d.getTime())) return d;
+      const p = new Date(value);
+      if (!isNaN(p.getTime())) return p;
+    }
+    return new Date();
+  };
+
+  const [viewDate, setViewDate] = useState(getInitialDate);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  useEffect(() => {
+    setViewDate(getInitialDate());
+  }, [value]);
+
+  const openCalendar = () => {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setPopupStyle({
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: rect.left,
+        zIndex: 50,
+      });
+    }
+    setOpen(true);
+  };
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let selectedDate: Date | null = null;
+  if (value) {
+    const d = new Date(value + 'T00:00:00');
+    if (!isNaN(d.getTime())) selectedDate = d;
+  }
+
+  const selectDate = (day: number) => {
+    const y = String(year);
+    const m = String(month + 1).padStart(2, '0');
+    const d = String(day).padStart(2, '0');
+    onChange(`${y}-${m}-${d}`);
+    setOpen(false);
+  };
+
+  const prevMonth = () => setViewDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setViewDate(new Date(year, month + 1, 1));
+
+  const display = value ? formatDate(value) : '';
+
+  return (
+    <div ref={containerRef} className="relative">
+      <label className="block text-spotify-text text-xs mb-1">{label}</label>
+      <input
+        ref={inputRef}
+        type="text"
+        readOnly
+        value={display}
+        onClick={openCalendar}
+        onFocus={openCalendar}
+        placeholder="Pilih tanggal"
+        className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors cursor-pointer"
+      />
+      {open && (
+        <div style={popupStyle} className="bg-[#282828] border border-[#404040] rounded-lg p-3 shadow-xl w-64">
+          <div className="flex items-center justify-between mb-2">
+            <button type="button" onClick={prevMonth} className="text-spotify-text hover:text-white p-1 text-lg leading-none">&larr;</button>
+            <span className="text-white text-sm font-medium">{MONTHS_ID[month]} {year}</span>
+            <button type="button" onClick={nextMonth} className="text-spotify-text hover:text-white p-1 text-lg leading-none">&rarr;</button>
+          </div>
+          <div className="grid grid-cols-7 gap-1 text-center text-xs text-spotify-text mb-1">
+            {DAYS_SHORT.map((d) => <div key={d}>{d}</div>)}
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {Array.from({ length: firstDay }, (_, i) => <div key={`e${i}`} />)}
+            {Array.from({ length: daysInMonth }, (_, i) => {
+              const day = i + 1;
+              const d = new Date(year, month, day);
+              d.setHours(0, 0, 0, 0);
+              const isToday = d.getTime() === today.getTime();
+              const isSelected = selectedDate && d.getTime() === selectedDate.getTime();
+              return (
+                <button
+                  type="button"
+                  key={day}
+                  onClick={() => selectDate(day)}
+                  className={`text-xs rounded-full w-7 h-7 flex items-center justify-center transition-colors ${
+                    isSelected ? 'bg-spotify-green text-black font-medium' :
+                    isToday ? 'border border-spotify-green text-spotify-green' :
+                    'text-spotify-text hover:bg-[#404040] hover:text-white'
+                  }`}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const HOURS = Array.from({ length: 18 }, (_, i) => String(i + 6).padStart(2, '0') + ':00');
+
+function TimeSelect({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="block text-spotify-text text-xs mb-1">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors"
+      >
+        <option value="">-- Pilih Jam --</option>
+        {HOURS.map((h) => (
+          <option key={h} value={h}>{h}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function EndTimeSelect({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  const getDropdownValue = (v: string) => {
+    if (!v) return '';
+    if (v === 'Selesai') return 'Selesai';
+    return '__custom__';
+  };
+
+  const [dropdownValue, setDropdownValue] = useState(getDropdownValue(value));
+
+  useEffect(() => {
+    setDropdownValue(getDropdownValue(value));
+  }, [value]);
+
+  const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const v = e.target.value;
+    setDropdownValue(v);
+    if (v === '') onChange('');
+    else if (v === 'Selesai') onChange('Selesai');
+    else if (v === '__custom__') onChange('');
+  };
+
+  const showTimeInput = dropdownValue === '__custom__';
+
+  return (
+    <div>
+      <label className="block text-spotify-text text-xs mb-1">{label}</label>
+      <select
+        value={dropdownValue}
+        onChange={handleDropdownChange}
+        className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors"
+      >
+        <option value="">-</option>
+        <option value="Selesai">Selesai</option>
+        <option value="__custom__">Pilih Jam Selesai</option>
+      </select>
+      {showTimeInput && (
+        <input
+          type="time"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-spotify-bg border border-[#404040] rounded-lg px-3 py-2 text-spotify-white text-sm focus:border-spotify-green focus:outline-none transition-colors [color-scheme:dark] mt-2"
+        />
+      )}
+    </div>
+  );
 }
 
 export default function EventForm({ token, eventSlug }: EventFormProps) {
@@ -183,7 +360,6 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
       </div>
 
       <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
-        {/* Nama Pengantin */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Nama Pengantin</h4>
           <div className="grid grid-cols-2 gap-3">
@@ -192,7 +368,6 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
           </div>
         </div>
 
-        {/* Mempelai Pria */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Mempelai Pria</h4>
           <div className="grid grid-cols-2 gap-3">
@@ -205,7 +380,6 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
           </div>
         </div>
 
-        {/* Mempelai Wanita */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Mempelai Wanita</h4>
           <div className="grid grid-cols-2 gap-3">
@@ -218,27 +392,24 @@ export default function EventForm({ token, eventSlug }: EventFormProps) {
           </div>
         </div>
 
-        {/* Tanggal Akad */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Akad Nikah</h4>
           <div className="grid grid-cols-3 gap-3">
-            <DateField label="Tanggal" value={data.akadDate} onChange={(v) => set('akadDate', v)} />
-            <TimeField label="Jam Mulai" value={data.akadTime} onChange={(v) => set('akadTime', v)} />
-            <TimeField label="Jam Selesai (opsional)" value={akadTimeEnd} onChange={setAkadTimeEnd} />
+            <DatePicker label="Tanggal" value={data.akadDate} onChange={(v) => set('akadDate', v)} />
+            <TimeSelect label="Jam Mulai" value={data.akadTime} onChange={(v) => set('akadTime', v)} />
+            <EndTimeSelect label="Jam Selesai" value={akadTimeEnd} onChange={setAkadTimeEnd} />
           </div>
         </div>
 
-        {/* Resepsi */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Resepsi</h4>
           <div className="grid grid-cols-3 gap-3">
-            <DateField label="Tanggal" value={data.resepsiDate} onChange={(v) => set('resepsiDate', v)} />
-            <TimeField label="Jam Mulai" value={data.resepsiTime} onChange={(v) => set('resepsiTime', v)} />
-            <TimeField label="Jam Selesai (opsional)" value={resepsiTimeEnd} onChange={setResepsiTimeEnd} />
+            <DatePicker label="Tanggal" value={data.resepsiDate} onChange={(v) => set('resepsiDate', v)} />
+            <TimeSelect label="Jam Mulai" value={data.resepsiTime} onChange={(v) => set('resepsiTime', v)} />
+            <EndTimeSelect label="Jam Selesai" value={resepsiTimeEnd} onChange={setResepsiTimeEnd} />
           </div>
         </div>
 
-        {/* Lokasi */}
         <div>
           <h4 className="text-spotify-green text-sm font-medium mb-3">Lokasi</h4>
           <div className="grid grid-cols-2 gap-3">
