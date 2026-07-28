@@ -73,8 +73,8 @@ export default function CoupleProfile({ event }: { event: EventData }) {
   }, [update]);
 
   const people = [
-    { name: event.brideFullName, role: event.brideRole, parents: event.brideParents, img: event.bridePhoto, social: event.brideSocial },
-    { name: event.groomFullName, role: event.groomRole, parents: event.groomParents, img: event.groomPhoto, social: event.groomSocial },
+    { name: event.brideFullName, role: event.brideRole, parents: `${event.brideFather || ''}${event.brideFather && event.brideMother ? ' & ' : ''}${event.brideMother || ''}`, img: event.bridePhoto, social: event.brideSocial },
+    { name: event.groomFullName, role: event.groomRole, parents: `${event.groomFather || ''}${event.groomFather && event.groomMother ? ' & ' : ''}${event.groomMother || ''}`, img: event.groomPhoto, social: event.groomSocial },
   ];
 
   const items = [
@@ -227,11 +227,13 @@ export default function CoupleProfile({ event }: { event: EventData }) {
               </h3>
               <p className="text-gray-600 font-medium text-sm">{person.role}</p>
               <p className="text-gray-500 text-sm mt-1">{person.parents}</p>
-              <div className="mt-4">
-                <span className="text-xs px-4 py-1.5 rounded-full bg-[#C79031]/10 text-[#C79031] hover:bg-[#C79031]/20 transition-colors cursor-pointer">
-                  {person.social}
-                </span>
-              </div>
+              {person.social && (
+                <div className="mt-4">
+                  <span className="text-xs px-4 py-1.5 rounded-full bg-[#C79031]/10 text-[#C79031] hover:bg-[#C79031]/20 transition-colors cursor-pointer">
+                    {person.social}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           </motion.div>

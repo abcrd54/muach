@@ -35,10 +35,10 @@ eventsRouter.get('/:slug', async (req, res) => {
 eventsRouter.put('/:slug', authMiddleware, async (req, res) => {
   const event = await readEvent(req.params.slug);
   const fields = [
-    'coupleName1', 'coupleName2', 'brideFullName', 'brideRole', 'brideParents', 'bridePhoto', 'brideSocial',
-    'groomFullName', 'groomRole', 'groomParents', 'groomPhoto', 'groomSocial',
-    'weddingDate', 'mapsEmbedUrl', 'mapsLink', 'venueName', 'venueAddress',
-    'akadTitle', 'akadDate', 'akadTime', 'resepsiTitle', 'resepsiDate', 'resepsiTime',
+    'coupleName1', 'coupleName2', 'brideFullName', 'brideRole', 'brideFather', 'brideMother', 'bridePhoto', 'brideSocial',
+    'groomFullName', 'groomRole', 'groomFather', 'groomMother', 'groomPhoto', 'groomSocial',
+    'weddingDate', 'mapsLink', 'mapsEmbedUrl', 'venueName', 'venueAddress',
+    'akadDate', 'akadTime', 'resepsiDate', 'resepsiTime',
   ];
   for (const f of fields) { if (req.body[f] !== undefined) event[f] = req.body[f]; }
   await writeEvent(req.params.slug, event);

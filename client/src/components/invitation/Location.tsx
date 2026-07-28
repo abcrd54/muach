@@ -12,8 +12,8 @@ const fadeUp = {
 
 export default function Location({ event }: { event: EventData }) {
   const events = [
-    { title: event.akadTitle, date: event.akadDate, time: event.akadTime },
-    { title: event.resepsiTitle, date: event.resepsiDate, time: event.resepsiTime },
+    { title: 'Akad Nikah', date: event.akadDate, time: event.akadTime },
+    { title: 'Resepsi', date: event.resepsiDate, time: event.resepsiTime },
   ];
 
   return (

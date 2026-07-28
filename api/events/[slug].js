@@ -14,11 +14,11 @@ module.exports = async function handler(req, res) {
     const event = await readEvent(slug);
     const fields = [
       'coupleName1', 'coupleName2',
-      'brideFullName', 'brideRole', 'brideParents', 'bridePhoto', 'brideSocial',
-      'groomFullName', 'groomRole', 'groomParents', 'groomPhoto', 'groomSocial',
-      'weddingDate', 'mapsEmbedUrl', 'mapsLink', 'venueName', 'venueAddress',
-      'akadTitle', 'akadDate', 'akadTime',
-      'resepsiTitle', 'resepsiDate', 'resepsiTime',
+      'brideFullName', 'brideRole', 'brideFather', 'brideMother', 'bridePhoto', 'brideSocial',
+      'groomFullName', 'groomRole', 'groomFather', 'groomMother', 'groomPhoto', 'groomSocial',
+      'weddingDate', 'mapsLink', 'mapsEmbedUrl', 'venueName', 'venueAddress',
+      'akadDate', 'akadTime',
+      'resepsiDate', 'resepsiTime',
     ];
     for (const f of fields) {
       if (body[f] !== undefined) event[f] = body[f];

@@ -12,8 +12,8 @@ const fadeUp = {
 
 export default function CoupleInfo({ event }: { event: EventData }) {
   const people = [
-    { name: event.brideFullName, role: event.brideRole, parents: event.brideParents, img: event.bridePhoto, social: event.brideSocial },
-    { name: event.groomFullName, role: event.groomRole, parents: event.groomParents, img: event.groomPhoto, social: event.groomSocial },
+    { name: event.brideFullName, role: event.brideRole, parents: `${event.brideFather || ''}${event.brideFather && event.brideMother ? ' & ' : ''}${event.brideMother || ''}`, img: event.bridePhoto, social: event.brideSocial },
+    { name: event.groomFullName, role: event.groomRole, parents: `${event.groomFather || ''}${event.groomFather && event.groomMother ? ' & ' : ''}${event.groomMother || ''}`, img: event.groomPhoto, social: event.groomSocial },
   ];
 
   return (
@@ -72,11 +72,13 @@ export default function CoupleInfo({ event }: { event: EventData }) {
               </h3>
               <p className="text-spotify-text font-medium">{person.role}</p>
               <p className="text-spotify-text text-sm mt-1">{person.parents}</p>
-              <div className="mt-5 flex justify-center gap-4">
-                <span className="text-sm px-3 py-1.5 rounded-full bg-spotify-bg/50 hover:bg-spotify-green/20 transition-all cursor-pointer hover:scale-105 text-spotify-text">
-                  {person.social}
-                </span>
-              </div>
+              {person.social && (
+                <div className="mt-5 flex justify-center gap-4">
+                  <span className="text-sm px-3 py-1.5 rounded-full bg-spotify-bg/50 hover:bg-spotify-green/20 transition-all cursor-pointer hover:scale-105 text-spotify-text">
+                    {person.social}
+                  </span>
+                </div>
+              )}
             </div>
           </motion.div>
         ))}
