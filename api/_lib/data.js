@@ -2,12 +2,16 @@ const { readFileSync, writeFileSync, existsSync, mkdirSync } = require('fs');
 const { join } = require('path');
 
 let redis = null;
-const REDIS_URL = process.env.REDIS_URL;
+const REDIS_URL = process.env.KV_REST_API_URL;
 const REDIS_TOKEN = process.env.KV_REST_API_TOKEN;
 
 if (REDIS_URL && REDIS_TOKEN) {
-  const { Redis } = require('@upstash/redis');
-  redis = new Redis({ url: REDIS_URL, token: REDIS_TOKEN });
+  try {
+    const { Redis } = require('@upstash/redis');
+    redis = new Redis({ url: REDIS_URL, token: REDIS_TOKEN });
+  } catch {
+    redis = null;
+  }
 }
 
 const isRedis = () => redis !== null;
