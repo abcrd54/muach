@@ -28,7 +28,28 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method === 'DELETE') {
-    return json(res, { message: 'DELETE endpoint reached' });
+    if (!authMiddleware(req)) return json(res, { message: 'Unauthorized' }, 401);
+    try {
+      const { writeToRedis, setInMemory, memoryStore } = require('../_lib/data');
+      const events = await listEvents();
+      const idx = events.indexOf(slug);
+      if (idx !== -1) {
+        events.splice(idx, 1);
+        await writeToRedis('events:list', events);
+        setInMemory('events:list', events);
+      }
+      await writeToRedis('event:' + slug, null);
+      await writeToRedis('event:' + slug + ':config', null);
+      await writeToRedis('event:' + slug + ':guests', null);
+      await writeToRedis('event:' + slug + ':rsvps', null);
+      delete memoryStore['event:' + slug];
+      delete memoryStore['event:' + slug + ':config'];
+      delete memoryStore['event:' + slug + ':guests'];
+      delete memoryStore['event:' + slug + ':rsvps'];
+      return json(res, { message: 'Event berhasil dihapus' });
+    } catch (e) {
+      return json(res, { message: e.message || String(e) }, 500);
+    }
   }
 
   return json(res, { message: 'Method not allowed' }, 405);
