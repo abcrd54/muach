@@ -2,8 +2,8 @@ const { readFileSync, writeFileSync, existsSync, mkdirSync } = require('fs');
 const { join } = require('path');
 
 let redis = null;
-const REDIS_URL = process.env.UPSTASH_REDIS_URL;
-const REDIS_TOKEN = process.env.UPSTASH_REDIS_TOKEN;
+const REDIS_URL = process.env.REDIS_URL;
+const REDIS_TOKEN = process.env.KV_REST_API_TOKEN;
 
 if (REDIS_URL && REDIS_TOKEN) {
   const { Redis } = require('@upstash/redis');
