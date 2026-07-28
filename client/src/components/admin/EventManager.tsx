@@ -59,8 +59,8 @@ export default function EventManager({ token, eventSlug, onEventChange }: EventM
         onEventChange(remaining[0]?.slug || '');
       }
       setTimeout(() => setMessage(''), 3000);
-    } catch {
-      setMessage('Gagal menghapus event');
+    } catch (err: any) {
+      setMessage(err.message || 'Gagal menghapus event');
     }
   };
 

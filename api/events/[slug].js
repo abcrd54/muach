@@ -33,8 +33,8 @@ module.exports = async function handler(req, res) {
       await deleteEvent(slug);
       return json(res, { message: 'Event berhasil dihapus' });
     } catch (e) {
-      console.error('deleteEvent error:', e.message || e);
-      return json(res, { message: 'Gagal menghapus event' }, 500);
+      console.error('DELETE error:', e);
+      return json(res, { message: e.message || String(e) }, 500);
     }
   }
 
